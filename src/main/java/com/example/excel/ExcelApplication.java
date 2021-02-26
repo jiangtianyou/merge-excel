@@ -5,6 +5,7 @@ import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.excel.write.metadata.WriteSheet;
+import com.example.excel.business.CustomObject;
 import com.example.excel.business.RowDataListener;
 import com.example.excel.model.ExcelRowData;
 import com.example.excel.utils.Helper;
@@ -15,16 +16,15 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @SpringBootApplication
 public class ExcelApplication {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RowDataListener.class);
 	// 接解析出来的所有excel的容器
 	public static List<ExcelRowData> listFullMerge = new ArrayList<>();
-	public static List<List<String>> pickMerge = new ArrayList<>();
+	public static List<ExcelRowData> listPickedMerge = new ArrayList<>();
+//	public static Map<String, List<String>> listPickedMerge = new HashMap<>();
 
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(ExcelApplication.class);
@@ -49,8 +49,9 @@ public class ExcelApplication {
 		// 整理数据 输出excel
 		int i = Helper.chooseMode(args);
 		if (i == 0) {
-			directWrite(args[0] + "\\\\" + "输出文件.xlsx");
-
+			directWrite(args[0] + "\\\\" + "直接合并结果.xlsx");
+		}else{
+			convertAndWrite(args[0] + "\\\\" + "选择合并结果.xlsx");
 		}
 
 	}
@@ -59,6 +60,8 @@ public class ExcelApplication {
 		ExcelReader excelReader = null;
 		try {
 			excelReader = EasyExcel.read(path, ExcelRowData.class, new RowDataListener()).build();
+			// 把文件名传给Listener
+			excelReader.analysisContext().readWorkbookHolder().setCustomObject(new CustomObject(path, Helper.chooseMode(args)));
 			ReadSheet readSheet = EasyExcel.readSheet(0).build();
 			readSheet.setHeadRowNumber(0);
 			excelReader.read(readSheet);
@@ -77,7 +80,7 @@ public class ExcelApplication {
 		ExcelWriter excelWriter = null;
 		try {
 			excelWriter = EasyExcel.write(fileName, ExcelRowData.class).build();
-			WriteSheet writeSheet = EasyExcel.writerSheet("直接合并").build();
+			WriteSheet writeSheet = EasyExcel.writerSheet("结果sheet").build();
 			writeSheet.setNeedHead(false);
 			excelWriter.write(listFullMerge, writeSheet);
 		} finally {
@@ -91,16 +94,15 @@ public class ExcelApplication {
 	/**
 	 * 根据输入的参数 把数据进行转换再合并
 	 */
-	public static void convertAndWrite() {
+	public static void convertAndWrite(String filename) {
 		List<Object> data = new ArrayList<>();
-
+		// todo 转换成RowExcelData
+		listPickedMerge
 		data = Arrays.asList(Arrays.asList("1", "2", "3", "4"), Arrays.asList("5", "6", "7", "8"));
-
-		String fileName = "E:\\Desktop\\数据处理\\测试\\result.xlsx";
 		ExcelWriter excelWriter = null;
 		try {
-			excelWriter = EasyExcel.write(fileName, null).build();
-			WriteSheet writeSheet1 = EasyExcel.writerSheet("test").build();
+			excelWriter = EasyExcel.write(filename, null).build();
+			WriteSheet writeSheet1 = EasyExcel.writerSheet("结果sheet").build();
 			writeSheet1.setNeedHead(false);
 			excelWriter.write(data, writeSheet1);
 		} finally {
