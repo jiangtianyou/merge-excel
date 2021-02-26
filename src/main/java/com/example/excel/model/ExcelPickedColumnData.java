@@ -66,7 +66,7 @@ public class ExcelPickedColumnData{
 
 
 	private List<String> patternToCell() {
-		pattern = pattern.replace(" ", "");
+		pattern = pattern.toLowerCase().replace(" ", "");
 		String regex = "(\\w{1}\\d|-)";
 		//先进行移除
 		Matcher matcher = Pattern.compile(regex, Pattern.MULTILINE)
