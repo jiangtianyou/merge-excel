@@ -28,7 +28,7 @@ public class Helper {
 			files = new File[0];
 		}
 		return Arrays.stream(files).map(File::getAbsolutePath)
-				.filter(item -> item.endsWith("xls") && !item.startsWith(FILE_NAME_PRE))
+				.filter(item -> item.endsWith("xls") && !Helper.getShortFileName(item).startsWith(FILE_NAME_PRE))
 				.collect(Collectors.toList());
 	}
 
