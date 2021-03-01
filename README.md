@@ -1,8 +1,5 @@
 # merge-excel
-对多个excel文件进行合并
-
-使用的excel操作jar包文档：https://www.yuque.com/easyexcel/doc/write
-
+对多个excel文件进行合并，使用easyexcel。
 两种合并方式：
 1 直接合并
   java -jar xxx.jar 生成jar包 
